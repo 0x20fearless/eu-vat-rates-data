@@ -1,0 +1,47 @@
+name: Update EU VAT Rates
+
+on:
+  schedule:
+    # Every day at 07:00 UTC (08:00 Brussels winter / 09:00 summer)
+    - cron: '0 7 * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Dry run (show diff without committing)'
+        type: boolean
+        default: false
+
+jobs:
+  update:
+    name: Fetch & commit updated rates
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - run: pip install requests
+
+      - name: Fetch latest VAT rates
+        id: fetch
+        run: |
+          if [ "${{ github.event.inputs.dry_run }}" = "true" ]; then
+            python3 scripts/update.py --dry-run
+          else
+            python3 scripts/update.py
+          fi
+
+      - name: Commit and push
+        if: github.event.inputs.dry_run != 'true'
+        run: |
+          DATE=$(date -u +%Y-%m-%d)
+          git config user.name "vatnode-bot"
+          git config user.email "bot@vatnode.dev"
+          git add data/eu-vat-rates-data.json
+          git diff --staged --quiet || git commit -m "chore: update VAT rates ${DATE}"
+          git push
