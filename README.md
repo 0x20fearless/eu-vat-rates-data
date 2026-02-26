@@ -80,8 +80,6 @@ interface VatRate {
 - Committed on every run (version date always updated)
 - Full audit trail: \`git log -- data/eu-vat-rates-data.json\`
 
-To manually trigger: [Actions → Run workflow](https://github.com/vatnode/eu-vat-rates-data/actions/workflows/update.yml)
-
 To run locally:
 
 \`\`\`bash
