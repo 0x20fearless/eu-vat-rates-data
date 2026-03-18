@@ -63,7 +63,7 @@ CURRENCY: dict[str, str] = {
 # Non-EU European countries — rates maintained manually.
 # Sources: official tax authority websites, Tax Foundation, PWC Tax Summaries (2026).
 NON_EU_COUNTRIES: dict[str, dict] = {
-    "AD": {"country": "Andorra",              "currency": "EUR", "standard": 4.5,  "reduced": [2.5],       "super_reduced": 1.0,  "parking": None},
+    "AD": {"country": "Andorra",              "currency": "EUR", "standard": 4.5,  "reduced": [1.0, 2.5],  "super_reduced": None, "parking": None},
     "AL": {"country": "Albania",              "currency": "ALL", "standard": 20.0, "reduced": [6.0, 10.0], "super_reduced": None, "parking": None},
     "BA": {"country": "Bosnia and Herzegovina","currency": "BAM","standard": 17.0, "reduced": [],           "super_reduced": None, "parking": None},
     "CH": {"country": "Switzerland",          "currency": "CHF", "standard": 8.1,  "reduced": [2.6, 3.8],  "super_reduced": None, "parking": None},
