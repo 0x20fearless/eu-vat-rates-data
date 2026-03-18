@@ -60,26 +60,59 @@ CURRENCY: dict[str, str] = {
     "PL": "PLN", "RO": "RON", "SE": "SEK",
 }
 
+# Local name of the VAT tax for each EU-27 member state.
+# Multi-language countries: most widely used official language chosen.
+# BE → Dutch (largest language group), CH → German (largest), LU → French (legislation language).
+VAT_NAMES: dict[str, str] = {
+    "AT": "Umsatzsteuer",
+    "BE": "Belasting over de toegevoegde waarde",
+    "BG": "Данък върху добавената стойност",
+    "CY": "Φόρος Προστιθέμενης Αξίας",
+    "CZ": "Daň z přidané hodnoty",
+    "DE": "Umsatzsteuer",
+    "DK": "Moms",
+    "EE": "Käibemaks",
+    "ES": "Impuesto sobre el Valor Añadido",
+    "FI": "Arvonlisävero",
+    "FR": "Taxe sur la valeur ajoutée",
+    "GR": "Φόρος Προστιθέμενης Αξίας",
+    "HR": "Porez na dodanu vrijednost",
+    "HU": "Általános forgalmi adó",
+    "IE": "Value Added Tax",
+    "IT": "Imposta sul valore aggiunto",
+    "LT": "Pridėtinės vertės mokestis",
+    "LU": "Taxe sur la valeur ajoutée",
+    "LV": "Pievienotās vērtības nodoklis",
+    "MT": "Taxxa tal-Valur Miżjud",
+    "NL": "Belasting over de toegevoegde waarde",
+    "PL": "Podatek od towarów i usług",
+    "PT": "Imposto sobre o Valor Acrescentado",
+    "RO": "Taxa pe valoarea adăugată",
+    "SE": "Mervärdesskatt",
+    "SI": "Davek na dodano vrednost",
+    "SK": "Daň z pridanej hodnoty",
+}
+
 # Non-EU European countries — rates maintained manually.
 # Sources: official tax authority websites, Tax Foundation, PWC Tax Summaries (2026).
 NON_EU_COUNTRIES: dict[str, dict] = {
-    "AD": {"country": "Andorra",              "currency": "EUR", "standard": 4.5,  "reduced": [1.0, 2.5],  "super_reduced": None, "parking": None},
-    "AL": {"country": "Albania",              "currency": "ALL", "standard": 20.0, "reduced": [6.0, 10.0], "super_reduced": None, "parking": None},
-    "BA": {"country": "Bosnia and Herzegovina","currency": "BAM","standard": 17.0, "reduced": [],           "super_reduced": None, "parking": None},
-    "CH": {"country": "Switzerland",          "currency": "CHF", "standard": 8.1,  "reduced": [2.6, 3.8],  "super_reduced": None, "parking": None},
-    "GB": {"country": "United Kingdom",       "currency": "GBP", "standard": 20.0, "reduced": [5.0],       "super_reduced": None, "parking": None},
-    "GE": {"country": "Georgia",              "currency": "GEL", "standard": 18.0, "reduced": [],           "super_reduced": None, "parking": None},
-    "IS": {"country": "Iceland",              "currency": "ISK", "standard": 24.0, "reduced": [11.0],      "super_reduced": None, "parking": None},
-    "LI": {"country": "Liechtenstein",        "currency": "CHF", "standard": 8.1,  "reduced": [2.6, 3.8],  "super_reduced": None, "parking": None},
-    "MC": {"country": "Monaco",               "currency": "EUR", "standard": 20.0, "reduced": [5.5, 10.0], "super_reduced": 2.1,  "parking": None},
-    "MD": {"country": "Moldova",              "currency": "MDL", "standard": 20.0, "reduced": [8.0],       "super_reduced": None, "parking": None},
-    "ME": {"country": "Montenegro",           "currency": "EUR", "standard": 21.0, "reduced": [7.0, 15.0], "super_reduced": None, "parking": None},
-    "MK": {"country": "North Macedonia",      "currency": "MKD", "standard": 18.0, "reduced": [5.0, 10.0], "super_reduced": None, "parking": None},
-    "NO": {"country": "Norway",               "currency": "NOK", "standard": 25.0, "reduced": [12.0, 15.0],"super_reduced": None, "parking": None},
-    "RS": {"country": "Serbia",               "currency": "RSD", "standard": 20.0, "reduced": [10.0],      "super_reduced": None, "parking": None},
-    "TR": {"country": "Turkey",               "currency": "TRY", "standard": 20.0, "reduced": [1.0, 10.0], "super_reduced": None, "parking": None},
-    "UA": {"country": "Ukraine",              "currency": "UAH", "standard": 20.0, "reduced": [7.0, 14.0], "super_reduced": None, "parking": None},
-    "XK": {"country": "Kosovo",               "currency": "EUR", "standard": 18.0, "reduced": [8.0],       "super_reduced": None, "parking": None},
+    "AD": {"country": "Andorra",              "currency": "EUR", "vat_name": "Impost General Indirecte",                "standard": 4.5,  "reduced": [1.0, 2.5],  "super_reduced": None, "parking": None},
+    "AL": {"country": "Albania",              "currency": "ALL", "vat_name": "Tatimi mbi vlerën e shtuar",               "standard": 20.0, "reduced": [6.0, 10.0], "super_reduced": None, "parking": None},
+    "BA": {"country": "Bosnia and Herzegovina","currency": "BAM","vat_name": "Porez na dodanu vrijednost",               "standard": 17.0, "reduced": [],           "super_reduced": None, "parking": None},
+    "CH": {"country": "Switzerland",          "currency": "CHF", "vat_name": "Mehrwertsteuer",                           "standard": 8.1,  "reduced": [2.6, 3.8],  "super_reduced": None, "parking": None},
+    "GB": {"country": "United Kingdom",       "currency": "GBP", "vat_name": "Value Added Tax",                          "standard": 20.0, "reduced": [5.0],       "super_reduced": None, "parking": None},
+    "GE": {"country": "Georgia",              "currency": "GEL", "vat_name": "დამატებული ღირებულების გადასახადი",        "standard": 18.0, "reduced": [],           "super_reduced": None, "parking": None},
+    "IS": {"country": "Iceland",              "currency": "ISK", "vat_name": "Virðisaukaskattur",                        "standard": 24.0, "reduced": [11.0],      "super_reduced": None, "parking": None},
+    "LI": {"country": "Liechtenstein",        "currency": "CHF", "vat_name": "Mehrwertsteuer",                           "standard": 8.1,  "reduced": [2.6, 3.8],  "super_reduced": None, "parking": None},
+    "MC": {"country": "Monaco",               "currency": "EUR", "vat_name": "Taxe sur la valeur ajoutée",               "standard": 20.0, "reduced": [5.5, 10.0], "super_reduced": 2.1,  "parking": None},
+    "MD": {"country": "Moldova",              "currency": "MDL", "vat_name": "Taxa pe valoarea adăugată",                "standard": 20.0, "reduced": [8.0],       "super_reduced": None, "parking": None},
+    "ME": {"country": "Montenegro",           "currency": "EUR", "vat_name": "Porez na dodatu vrijednost",               "standard": 21.0, "reduced": [7.0, 15.0], "super_reduced": None, "parking": None},
+    "MK": {"country": "North Macedonia",      "currency": "MKD", "vat_name": "Данок на додадена вредност",               "standard": 18.0, "reduced": [5.0, 10.0], "super_reduced": None, "parking": None},
+    "NO": {"country": "Norway",               "currency": "NOK", "vat_name": "Merverdiavgift",                           "standard": 25.0, "reduced": [12.0, 15.0],"super_reduced": None, "parking": None},
+    "RS": {"country": "Serbia",               "currency": "RSD", "vat_name": "Porez na dodatu vrednost",                 "standard": 20.0, "reduced": [10.0],      "super_reduced": None, "parking": None},
+    "TR": {"country": "Turkey",               "currency": "TRY", "vat_name": "Katma Değer Vergisi",                      "standard": 20.0, "reduced": [1.0, 10.0], "super_reduced": None, "parking": None},
+    "UA": {"country": "Ukraine",              "currency": "UAH", "vat_name": "Податок на додану вартість",               "standard": 20.0, "reduced": [7.0, 14.0], "super_reduced": None, "parking": None},
+    "XK": {"country": "Kosovo",               "currency": "EUR", "vat_name": "Tatimi mbi Vlerën e Shtuar",               "standard": 18.0, "reduced": [8.0],       "super_reduced": None, "parking": None},
 }
 
 DATA_FILE = Path(__file__).parent.parent / "data" / "eu-vat-rates-data.json"
@@ -246,6 +279,7 @@ def build_dataset(eu_rates: dict[str, dict]) -> dict:
             "country":      COUNTRY_NAMES.get(code, code),
             "currency":     CURRENCY.get(code, "EUR"),
             "eu_member":    True,
+            "vat_name":     VAT_NAMES.get(code, ""),
             "standard":     entry.get("standard"),
             "reduced":      entry.get("reduced", []),
             "super_reduced": entry.get("super_reduced"),
@@ -254,7 +288,16 @@ def build_dataset(eu_rates: dict[str, dict]) -> dict:
 
     # Non-EU European countries: hardcoded, updated manually
     for code, entry in NON_EU_COUNTRIES.items():
-        rates_out[code] = {**entry, "eu_member": False}
+        rates_out[code] = {
+            "country":      entry["country"],
+            "currency":     entry["currency"],
+            "eu_member":    False,
+            "vat_name":     entry["vat_name"],
+            "standard":     entry["standard"],
+            "reduced":      entry["reduced"],
+            "super_reduced": entry["super_reduced"],
+            "parking":      entry["parking"],
+        }
 
     return {
         "version": today,
