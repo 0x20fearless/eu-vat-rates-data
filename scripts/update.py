@@ -52,13 +52,34 @@ COUNTRY_NAMES: dict[str, str] = {
     "LV": "Latvia",       "MT": "Malta",          "NL": "Netherlands",
     "PL": "Poland",       "PT": "Portugal",       "RO": "Romania",
     "SE": "Sweden",       "SI": "Slovenia",       "SK": "Slovakia",
-    "GB": "United Kingdom",
 }
 
-# Countries that do not use EUR as their currency
+# EU-27 countries that do not use EUR as their currency
 CURRENCY: dict[str, str] = {
     "BG": "BGN", "CZ": "CZK", "DK": "DKK", "HU": "HUF",
-    "PL": "PLN", "RO": "RON", "SE": "SEK", "GB": "GBP",
+    "PL": "PLN", "RO": "RON", "SE": "SEK",
+}
+
+# Non-EU European countries — rates maintained manually.
+# Sources: official tax authority websites, Tax Foundation, PWC Tax Summaries (2026).
+NON_EU_COUNTRIES: dict[str, dict] = {
+    "AD": {"country": "Andorra",              "currency": "EUR", "standard": 4.5,  "reduced": [2.5],       "super_reduced": 1.0,  "parking": None},
+    "AL": {"country": "Albania",              "currency": "ALL", "standard": 20.0, "reduced": [6.0, 10.0], "super_reduced": None, "parking": None},
+    "BA": {"country": "Bosnia and Herzegovina","currency": "BAM","standard": 17.0, "reduced": [],           "super_reduced": None, "parking": None},
+    "CH": {"country": "Switzerland",          "currency": "CHF", "standard": 8.1,  "reduced": [2.6, 3.8],  "super_reduced": None, "parking": None},
+    "GB": {"country": "United Kingdom",       "currency": "GBP", "standard": 20.0, "reduced": [5.0],       "super_reduced": None, "parking": None},
+    "GE": {"country": "Georgia",              "currency": "GEL", "standard": 18.0, "reduced": [],           "super_reduced": None, "parking": None},
+    "IS": {"country": "Iceland",              "currency": "ISK", "standard": 24.0, "reduced": [11.0],      "super_reduced": None, "parking": None},
+    "LI": {"country": "Liechtenstein",        "currency": "CHF", "standard": 8.1,  "reduced": [2.6, 3.8],  "super_reduced": None, "parking": None},
+    "MC": {"country": "Monaco",               "currency": "EUR", "standard": 20.0, "reduced": [5.5, 10.0], "super_reduced": 2.1,  "parking": None},
+    "MD": {"country": "Moldova",              "currency": "MDL", "standard": 20.0, "reduced": [8.0],       "super_reduced": None, "parking": None},
+    "ME": {"country": "Montenegro",           "currency": "EUR", "standard": 21.0, "reduced": [7.0, 15.0], "super_reduced": None, "parking": None},
+    "MK": {"country": "North Macedonia",      "currency": "MKD", "standard": 18.0, "reduced": [5.0, 10.0], "super_reduced": None, "parking": None},
+    "NO": {"country": "Norway",               "currency": "NOK", "standard": 25.0, "reduced": [12.0, 15.0],"super_reduced": None, "parking": None},
+    "RS": {"country": "Serbia",               "currency": "RSD", "standard": 20.0, "reduced": [10.0],      "super_reduced": None, "parking": None},
+    "TR": {"country": "Turkey",               "currency": "TRY", "standard": 20.0, "reduced": [1.0, 10.0], "super_reduced": None, "parking": None},
+    "UA": {"country": "Ukraine",              "currency": "UAH", "standard": 20.0, "reduced": [7.0, 14.0], "super_reduced": None, "parking": None},
+    "XK": {"country": "Kosovo",               "currency": "EUR", "standard": 18.0, "reduced": [8.0],       "super_reduced": None, "parking": None},
 }
 
 DATA_FILE = Path(__file__).parent.parent / "data" / "eu-vat-rates-data.json"
@@ -207,27 +228,6 @@ def fetch_from_tedb() -> Optional[dict[str, dict]]:
 
 
 # ---------------------------------------------------------------------------
-# UK — queried separately (UK left EU; TEDB covers only EU-27)
-# ---------------------------------------------------------------------------
-
-# UK VAT rates are stable and well-known; fallback hardcoded value
-UK_FALLBACK = {
-    "standard":     20.0,
-    "reduced":      [5.0],
-    "super_reduced": None,
-    "parking":       None,
-}
-
-def fetch_uk_rates() -> dict:
-    """
-    Attempt to fetch UK VAT rates from HMRC or fall back to hardcoded values.
-    UK is not in TEDB (left EU), so we maintain it manually.
-    """
-    # UK rates have been stable since 2011; update this if HMRC changes them.
-    return UK_FALLBACK
-
-
-# ---------------------------------------------------------------------------
 # Build final dataset
 # ---------------------------------------------------------------------------
 
@@ -235,33 +235,32 @@ def build_dataset(eu_rates: dict[str, dict]) -> dict:
     today = datetime.date.today().isoformat()
     rates_out: dict[str, dict] = {}
 
-    all_codes = sorted(
-        {TEDB_TO_ISO.get(c, c) for c in EU_MEMBER_STATES} | {"GB"}
-    )
-
-    for code in all_codes:
-        if code == "GB":
-            entry = fetch_uk_rates()
-        else:
-            entry = eu_rates.get(code)
-            if not entry:
-                print(f"  Warning: no data for {code} — skipped.", file=sys.stderr)
-                continue
-
+    # EU-27: rates from TEDB
+    for code_tedb in EU_MEMBER_STATES:
+        code = TEDB_TO_ISO.get(code_tedb, code_tedb)
+        entry = eu_rates.get(code)
+        if not entry:
+            print(f"  Warning: no data for {code} — skipped.", file=sys.stderr)
+            continue
         rates_out[code] = {
             "country":      COUNTRY_NAMES.get(code, code),
             "currency":     CURRENCY.get(code, "EUR"),
+            "eu_member":    True,
             "standard":     entry.get("standard"),
             "reduced":      entry.get("reduced", []),
             "super_reduced": entry.get("super_reduced"),
             "parking":      entry.get("parking"),
         }
 
+    # Non-EU European countries: hardcoded, updated manually
+    for code, entry in NON_EU_COUNTRIES.items():
+        rates_out[code] = {**entry, "eu_member": False}
+
     return {
         "version": today,
         "source":  "European Commission TEDB",
         "url":     "https://taxation-customs.ec.europa.eu/tedb/vatRates.html",
-        "rates":   rates_out,
+        "rates":   dict(sorted(rates_out.items())),
     }
 
 
