@@ -302,7 +302,7 @@ def build_dataset(eu_rates: dict[str, dict]) -> dict:
     return {
         "version": today,
         "source":  "European Commission TEDB",
-        "url":     "https://taxation-customs.ec.europa.eu/tedb/vatRates.html",
+        "url":     "https://ec.europa.eu/taxation_customs/tedb/",
         "rates":   dict(sorted(rates_out.items())),
     }
 
