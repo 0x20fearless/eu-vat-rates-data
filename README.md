@@ -41,28 +41,34 @@ console.log(rates.DE.standard) // 19
 
 ## Data structure
 
-\`\`\`ts
+```ts
 interface VatRate {
   country:       string        // "Finland"
   currency:      string        // "EUR" (or "DKK", "GBP", …)
+  eu_member:     boolean       // true for EU-27, false for non-EU
+  vat_name:      string        // "Arvonlisävero" — official name in primary local language
+  vat_abbr:      string        // "ALV" — short abbreviation used locally
   standard:      number        // 25.5
   reduced:       number[]      // [10, 13.5] — sorted ascending
   super_reduced: number | null // null when not applicable
   parking:       number | null // null when not applicable
 }
-\`\`\`
+```
 
 ### Example JSON entry
 
-\`\`\`json
+```json
 {
-  "version": "2026-02-25",
+  "version": "2026-03-27",
   "source": "European Commission TEDB",
   "url": "https://ec.europa.eu/taxation_customs/tedb/",
   "rates": {
     "FI": {
       "country": "Finland",
       "currency": "EUR",
+      "eu_member": true,
+      "vat_name": "Arvonlisävero",
+      "vat_abbr": "ALV",
       "standard": 25.5,
       "reduced": [10, 13.5],
       "super_reduced": null,
@@ -70,7 +76,7 @@ interface VatRate {
     }
   }
 }
-\`\`\`
+```
 
 ---
 
@@ -78,23 +84,29 @@ interface VatRate {
 
 - Fetched from EC TEDB SOAP API: **daily at 07:00 UTC**
 - Committed on every run (version date always updated)
-- Full audit trail: \`git log -- data/eu-vat-rates-data.json\`
+- Full audit trail: `git log -- data/eu-vat-rates-data.json`
 
 To run locally:
 
-\`\`\`bash
+```bash
 git clone https://github.com/vatnode/eu-vat-rates-data.git
 pip install requests
 python3 scripts/update.py
-\`\`\`
+```
 
 ---
 
 ## Covered countries
 
-EU-27 member states + United Kingdom (28 countries total):
+**EU-27** (daily auto-updates via EC TEDB):
 
-\`AT\` \`BE\` \`BG\` \`CY\` \`CZ\` \`DE\` \`DK\` \`EE\` \`ES\` \`FI\` \`FR\` \`GB\` \`GR\` \`HR\` \`HU\` \`IE\` \`IT\` \`LT\` \`LU\` \`LV\` \`MT\` \`NL\` \`PL\` \`PT\` \`RO\` \`SE\` \`SI\` \`SK\`
+`AT` `BE` `BG` `CY` `CZ` `DE` `DK` `EE` `ES` `FI` `FR` `GR` `HR` `HU` `IE` `IT` `LT` `LU` `LV` `MT` `NL` `PL` `PT` `RO` `SE` `SI` `SK`
+
+**Non-EU Europe** (manually maintained):
+
+`AD` `AL` `BA` `CH` `GB` `GE` `IS` `LI` `MC` `MD` `ME` `MK` `NO` `RS` `TR` `UA` `XK`
+
+44 countries total.
 
 ---
 
