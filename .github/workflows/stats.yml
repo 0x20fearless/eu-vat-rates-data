@@ -59,7 +59,7 @@ jobs:
           TOTAL=$(echo "$DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['downloads'])")
           echo "total=$TOTAL" >> "$GITHUB_OUTPUT"
 
-      - name: Fetch GitHub stars and forks
+      - name: Fetch GitHub stars
         id: github
         run: |
           JS_DATA=$(curl -s "https://api.github.com/repos/vatnode/eu-vat-rates-data-js")
@@ -75,43 +75,30 @@ jobs:
           STARS_RB=$(echo "$RB_DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['stargazers_count'])")
           STARS_TOTAL=$((STARS_JS + STARS_PY + STARS_PHP + STARS_GO + STARS_RB))
 
-          FORKS_JS=$(echo "$JS_DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['forks_count'])")
-          FORKS_PY=$(echo "$PY_DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['forks_count'])")
-          FORKS_PHP=$(echo "$PHP_DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['forks_count'])")
-          FORKS_GO=$(echo "$GO_DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['forks_count'])")
-          FORKS_RB=$(echo "$RB_DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['forks_count'])")
-          FORKS_TOTAL=$((FORKS_JS + FORKS_PY + FORKS_PHP + FORKS_GO + FORKS_RB))
-
           echo "stars_js=$STARS_JS" >> "$GITHUB_OUTPUT"
           echo "stars_py=$STARS_PY" >> "$GITHUB_OUTPUT"
           echo "stars_php=$STARS_PHP" >> "$GITHUB_OUTPUT"
           echo "stars_go=$STARS_GO" >> "$GITHUB_OUTPUT"
           echo "stars_rb=$STARS_RB" >> "$GITHUB_OUTPUT"
           echo "stars_total=$STARS_TOTAL" >> "$GITHUB_OUTPUT"
-          echo "forks_js=$FORKS_JS" >> "$GITHUB_OUTPUT"
-          echo "forks_py=$FORKS_PY" >> "$GITHUB_OUTPUT"
-          echo "forks_php=$FORKS_PHP" >> "$GITHUB_OUTPUT"
-          echo "forks_go=$FORKS_GO" >> "$GITHUB_OUTPUT"
-          echo "forks_rb=$FORKS_RB" >> "$GITHUB_OUTPUT"
-          echo "forks_total=$FORKS_TOTAL" >> "$GITHUB_OUTPUT"
 
       - name: Ensure CSV header is current
         run: |
           mkdir -p stats
-          HEADER="date,npm_weekly,npm_total,jsdelivr_weekly,jsdelivr_total,pypi_weekly,packagist_monthly,packagist_total,rubygems_total,stars_js,stars_py,stars_php,stars_go,stars_rb,stars_total,forks_js,forks_py,forks_php,forks_go,forks_rb,forks_total"
+          HEADER="date,npm_weekly,npm_total,jsdelivr_weekly,jsdelivr_total,pypi_weekly,packagist_monthly,packagist_total,rubygems_total,stars_js,stars_py,stars_php,stars_go,stars_rb,stars_total"
           if [ ! -f stats/downloads.csv ]; then
             echo "$HEADER" > stats/downloads.csv
-          elif ! head -1 stats/downloads.csv | grep -q "forks_total"; then
-            # Header is outdated — replace it, keep all data rows
+          elif ! head -1 stats/downloads.csv | grep -q "stars_total$"; then
+            # Header is outdated — replace it, keep all data rows (trim to new column count)
             echo "$HEADER" > stats/downloads.csv.new
-            tail -n +2 stats/downloads.csv >> stats/downloads.csv.new
+            tail -n +2 stats/downloads.csv | cut -d, -f1-15 >> stats/downloads.csv.new
             mv stats/downloads.csv.new stats/downloads.csv
           fi
 
       - name: Append to stats log
         run: |
           DATE=$(date -u +%Y-%m-%d)
-          echo "$DATE,${{ steps.npm.outputs.weekly }},${{ steps.npm.outputs.total }},${{ steps.jsdelivr.outputs.weekly }},${{ steps.jsdelivr.outputs.total }},${{ steps.pypi.outputs.weekly }},${{ steps.packagist.outputs.monthly }},${{ steps.packagist.outputs.total }},${{ steps.rubygems.outputs.total }},${{ steps.github.outputs.stars_js }},${{ steps.github.outputs.stars_py }},${{ steps.github.outputs.stars_php }},${{ steps.github.outputs.stars_go }},${{ steps.github.outputs.stars_rb }},${{ steps.github.outputs.stars_total }},${{ steps.github.outputs.forks_js }},${{ steps.github.outputs.forks_py }},${{ steps.github.outputs.forks_php }},${{ steps.github.outputs.forks_go }},${{ steps.github.outputs.forks_rb }},${{ steps.github.outputs.forks_total }}" >> stats/downloads.csv
+          echo "$DATE,${{ steps.npm.outputs.weekly }},${{ steps.npm.outputs.total }},${{ steps.jsdelivr.outputs.weekly }},${{ steps.jsdelivr.outputs.total }},${{ steps.pypi.outputs.weekly }},${{ steps.packagist.outputs.monthly }},${{ steps.packagist.outputs.total }},${{ steps.rubygems.outputs.total }},${{ steps.github.outputs.stars_js }},${{ steps.github.outputs.stars_py }},${{ steps.github.outputs.stars_php }},${{ steps.github.outputs.stars_go }},${{ steps.github.outputs.stars_rb }},${{ steps.github.outputs.stars_total }}" >> stats/downloads.csv
 
       - name: Commit stats
         run: |

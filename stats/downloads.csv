@@ -1,6 +1,6 @@
-date,npm_weekly,npm_total,jsdelivr_weekly,jsdelivr_total,pypi_weekly,packagist_monthly,packagist_total,rubygems_total,stars_js,stars_py,stars_php,stars_go,stars_rb,stars_total,forks_js,forks_py,forks_php,forks_go,forks_rb,forks_total
-2026-03-02,366,366,108,,,,,0,,,,,,,,,,,,
-2026-03-09,29,395,40,,,,,3,,,,,,,,,,,,
-2026-03-16,12,407,63,,,,,3,,,,,,,,,,,,
-2026-03-23,14,421,227,,,,,3,,,,,,,,,,,,
-2026-03-30,621,1210,0,0,493,3,3,1213,1,0,0,1,2,4,0,0,0,0,0,0
+date,npm_weekly,npm_total,jsdelivr_weekly,jsdelivr_total,pypi_weekly,packagist_monthly,packagist_total,rubygems_total,stars_js,stars_py,stars_php,stars_go,stars_rb,stars_total
+2026-03-02,366,366,108,,,,,0,,,,,,
+2026-03-09,29,395,40,,,,,3,,,,,,
+2026-03-16,12,407,63,,,,,3,,,,,,
+2026-03-23,14,421,227,,,,,3,,,,,,
+2026-03-30,621,1210,0,0,493,3,3,1213,1,0,0,1,2,4
