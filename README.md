@@ -95,6 +95,19 @@ python3 scripts/update.py
 
 ---
 
+## Keeping rates current
+
+The JSON in this repository is updated automatically — use it directly via CDN if you need always-current data without any setup:
+
+```
+https://cdn.jsdelivr.net/gh/vatnode/eu-vat-rates-data@main/data/eu-vat-rates-data.json
+https://raw.githubusercontent.com/vatnode/eu-vat-rates-data/main/data/eu-vat-rates-data.json
+```
+
+Language-specific packages bundle a snapshot of this data at publish time. A new package version is released automatically whenever rates change, but installed packages do not update themselves. If you use a package and need rates to stay current, set up [Renovate](https://renovatebot.com) or [Dependabot](https://docs.github.com/en/code-security/dependabot) — they will open a PR automatically when a new version is published.
+
+---
+
 ## Covered countries
 
 **EU-27** (daily auto-updates via EC TEDB):
