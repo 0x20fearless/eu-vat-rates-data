@@ -52,6 +52,8 @@ interface VatRate {
   reduced:       number[]      // [10, 13.5] — sorted ascending
   super_reduced: number | null // null when not applicable
   parking:       number | null // null when not applicable
+  format:        string        // "FI + 8 digits" — human-readable VAT number format
+  pattern:       string | null // "^FI\\d{8}$" — regex for format validation, null if no standard
 }
 ```
 
@@ -59,7 +61,7 @@ interface VatRate {
 
 ```json
 {
-  "version": "2026-03-30",
+  "version": "2026-03-31",
   "source": "European Commission TEDB",
   "rates": {
     "FI": {
@@ -71,7 +73,9 @@ interface VatRate {
       "standard": 25.5,
       "reduced": [10, 13.5],
       "super_reduced": null,
-      "parking": null
+      "parking": null,
+      "format": "FI + 8 digits",
+      "pattern": "^FI\\d{8}$"
     }
   }
 }
