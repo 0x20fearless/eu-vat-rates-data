@@ -54,4 +54,5 @@ jobs:
           git config user.email "bot@vatnode.dev"
           git add stats/downloads.csv
           git diff --staged --quiet || git commit -m "chore: weekly stats $(date -u +%Y-%m-%d)"
+          git pull --rebase
           git push
