@@ -23,17 +23,26 @@ jobs:
           echo "weekly=$WEEKLY" >> "$GITHUB_OUTPUT"
           echo "total=$TOTAL" >> "$GITHUB_OUTPUT"
 
+      - name: Fetch jsDelivr CDN hits
+        id: jsdelivr
+        run: |
+          DATA=$(curl -s "https://data.jsdelivr.com/v1/stats/packages/npm/eu-vat-rates-data")
+          WEEKLY=$(echo "$DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['hits']['week'])")
+          TOTAL=$(echo "$DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['hits']['total'])")
+          echo "weekly=$WEEKLY" >> "$GITHUB_OUTPUT"
+          echo "total=$TOTAL" >> "$GITHUB_OUTPUT"
+
       - name: Fetch PyPI downloads
         id: pypi
+        # pypistats has no all-time total; weekly is the finest available period metric
         run: |
           DATA=$(curl -s "https://pypistats.org/api/packages/eu-vat-rates-data/recent")
           WEEKLY=$(echo "$DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['last_week'])")
-          MONTHLY=$(echo "$DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['last_month'])")
           echo "weekly=$WEEKLY" >> "$GITHUB_OUTPUT"
-          echo "monthly=$MONTHLY" >> "$GITHUB_OUTPUT"
 
       - name: Fetch Packagist downloads
         id: packagist
+        # Packagist has no weekly; monthly + total
         run: |
           DATA=$(curl -s "https://packagist.org/packages/vatnode/eu-vat-rates-data.json")
           TOTAL=$(echo "$DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['package']['downloads']['total'])")
@@ -43,35 +52,65 @@ jobs:
 
       - name: Fetch RubyGems downloads
         id: rubygems
+        # RubyGems API only exposes all-time totals (no period-based endpoint)
         run: |
           DATA=$(curl -s "https://rubygems.org/api/v1/gems/eu_vat_rates_data.json")
           TOTAL=$(echo "$DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['downloads'])")
           echo "total=$TOTAL" >> "$GITHUB_OUTPUT"
 
-      - name: Fetch GitHub stars
-        id: stars
+      - name: Fetch GitHub stars and forks
+        id: github
         run: |
-          JS=$(curl -s "https://api.github.com/repos/vatnode/eu-vat-rates-data-js" | python3 -c "import sys,json; print(json.load(sys.stdin)['stargazers_count'])")
-          PY=$(curl -s "https://api.github.com/repos/vatnode/eu-vat-rates-data-python" | python3 -c "import sys,json; print(json.load(sys.stdin)['stargazers_count'])")
-          PHP=$(curl -s "https://api.github.com/repos/vatnode/eu-vat-rates-data-php" | python3 -c "import sys,json; print(json.load(sys.stdin)['stargazers_count'])")
-          GO=$(curl -s "https://api.github.com/repos/vatnode/eu-vat-rates-data-go" | python3 -c "import sys,json; print(json.load(sys.stdin)['stargazers_count'])")
-          RB=$(curl -s "https://api.github.com/repos/vatnode/eu-vat-rates-data-ruby" | python3 -c "import sys,json; print(json.load(sys.stdin)['stargazers_count'])")
-          TOTAL=$((JS + PY + PHP + GO + RB))
-          echo "total=$TOTAL" >> "$GITHUB_OUTPUT"
+          JS_DATA=$(curl -s "https://api.github.com/repos/vatnode/eu-vat-rates-data-js")
+          PY_DATA=$(curl -s "https://api.github.com/repos/vatnode/eu-vat-rates-data-python")
+          PHP_DATA=$(curl -s "https://api.github.com/repos/vatnode/eu-vat-rates-data-php")
+          GO_DATA=$(curl -s "https://api.github.com/repos/vatnode/eu-vat-rates-data-go")
+          RB_DATA=$(curl -s "https://api.github.com/repos/vatnode/eu-vat-rates-data-ruby")
 
-      - name: Ensure CSV header exists
+          STARS_JS=$(echo "$JS_DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['stargazers_count'])")
+          STARS_PY=$(echo "$PY_DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['stargazers_count'])")
+          STARS_PHP=$(echo "$PHP_DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['stargazers_count'])")
+          STARS_GO=$(echo "$GO_DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['stargazers_count'])")
+          STARS_RB=$(echo "$RB_DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['stargazers_count'])")
+          STARS_TOTAL=$((STARS_JS + STARS_PY + STARS_PHP + STARS_GO + STARS_RB))
+
+          FORKS_JS=$(echo "$JS_DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['forks_count'])")
+          FORKS_PY=$(echo "$PY_DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['forks_count'])")
+          FORKS_PHP=$(echo "$PHP_DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['forks_count'])")
+          FORKS_GO=$(echo "$GO_DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['forks_count'])")
+          FORKS_RB=$(echo "$RB_DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['forks_count'])")
+          FORKS_TOTAL=$((FORKS_JS + FORKS_PY + FORKS_PHP + FORKS_GO + FORKS_RB))
+
+          echo "stars_js=$STARS_JS" >> "$GITHUB_OUTPUT"
+          echo "stars_py=$STARS_PY" >> "$GITHUB_OUTPUT"
+          echo "stars_php=$STARS_PHP" >> "$GITHUB_OUTPUT"
+          echo "stars_go=$STARS_GO" >> "$GITHUB_OUTPUT"
+          echo "stars_rb=$STARS_RB" >> "$GITHUB_OUTPUT"
+          echo "stars_total=$STARS_TOTAL" >> "$GITHUB_OUTPUT"
+          echo "forks_js=$FORKS_JS" >> "$GITHUB_OUTPUT"
+          echo "forks_py=$FORKS_PY" >> "$GITHUB_OUTPUT"
+          echo "forks_php=$FORKS_PHP" >> "$GITHUB_OUTPUT"
+          echo "forks_go=$FORKS_GO" >> "$GITHUB_OUTPUT"
+          echo "forks_rb=$FORKS_RB" >> "$GITHUB_OUTPUT"
+          echo "forks_total=$FORKS_TOTAL" >> "$GITHUB_OUTPUT"
+
+      - name: Ensure CSV header is current
         run: |
           mkdir -p stats
-          if [ ! -f stats/downloads.csv ] || ! head -1 stats/downloads.csv | grep -q "^date,"; then
-            echo "date,npm_weekly,npm_total,pypi_weekly,pypi_monthly,packagist_monthly,packagist_total,rubygems_total,stars_total" > stats/downloads.csv.new
-            cat stats/downloads.csv >> stats/downloads.csv.new 2>/dev/null || true
+          HEADER="date,npm_weekly,npm_total,jsdelivr_weekly,jsdelivr_total,pypi_weekly,packagist_monthly,packagist_total,rubygems_total,stars_js,stars_py,stars_php,stars_go,stars_rb,stars_total,forks_js,forks_py,forks_php,forks_go,forks_rb,forks_total"
+          if [ ! -f stats/downloads.csv ]; then
+            echo "$HEADER" > stats/downloads.csv
+          elif ! head -1 stats/downloads.csv | grep -q "forks_total"; then
+            # Header is outdated — replace it, keep all data rows
+            echo "$HEADER" > stats/downloads.csv.new
+            tail -n +2 stats/downloads.csv >> stats/downloads.csv.new
             mv stats/downloads.csv.new stats/downloads.csv
           fi
 
       - name: Append to stats log
         run: |
           DATE=$(date -u +%Y-%m-%d)
-          echo "$DATE,${{ steps.npm.outputs.weekly }},${{ steps.npm.outputs.total }},${{ steps.pypi.outputs.weekly }},${{ steps.pypi.outputs.monthly }},${{ steps.packagist.outputs.monthly }},${{ steps.packagist.outputs.total }},${{ steps.rubygems.outputs.total }},${{ steps.stars.outputs.total }}" >> stats/downloads.csv
+          echo "$DATE,${{ steps.npm.outputs.weekly }},${{ steps.npm.outputs.total }},${{ steps.jsdelivr.outputs.weekly }},${{ steps.jsdelivr.outputs.total }},${{ steps.pypi.outputs.weekly }},${{ steps.packagist.outputs.monthly }},${{ steps.packagist.outputs.total }},${{ steps.rubygems.outputs.total }},${{ steps.github.outputs.stars_js }},${{ steps.github.outputs.stars_py }},${{ steps.github.outputs.stars_php }},${{ steps.github.outputs.stars_go }},${{ steps.github.outputs.stars_rb }},${{ steps.github.outputs.stars_total }},${{ steps.github.outputs.forks_js }},${{ steps.github.outputs.forks_py }},${{ steps.github.outputs.forks_php }},${{ steps.github.outputs.forks_go }},${{ steps.github.outputs.forks_rb }},${{ steps.github.outputs.forks_total }}" >> stats/downloads.csv
 
       - name: Commit stats
         run: |
