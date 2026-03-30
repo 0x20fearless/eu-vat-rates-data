@@ -2,9 +2,6 @@
 """
 Update EU VAT rates from European Commission TEDB SOAP web service.
 
-Official source: https://ec.europa.eu/taxation_customs/tedb/ws/VatRetrievalService.wsdl
-Documentation:  https://taxation-customs.ec.europa.eu/system/files/2021-06/soap_webservice_documentation.pdf
-
 Usage:
     python3 scripts/update.py [--dry-run]
 
@@ -63,6 +60,19 @@ CURRENCY: dict[str, str] = {
 # Local name of the VAT tax for each EU-27 member state.
 # Multi-language countries: most widely used official language chosen.
 # BE → Dutch (largest language group), CH → German (largest), LU → French (legislation language).
+# Local abbreviation of the VAT tax name for each country.
+VAT_ABBR: dict[str, str] = {
+    "AD": "IGI",   "AL": "TVSH",  "AT": "USt",   "BA": "PDV",   "BE": "BTW",
+    "BG": "ДДС",   "CH": "MWST",  "CY": "ΦΠΑ",   "CZ": "DPH",   "DE": "MwSt",
+    "DK": "moms",  "EE": "km",    "ES": "IVA",   "FI": "ALV",   "FR": "TVA",
+    "GB": "VAT",   "GE": "დღგ",   "GR": "ΦΠΑ",   "HR": "PDV",   "HU": "ÁFA",
+    "IE": "VAT",   "IS": "VSK",   "IT": "IVA",   "LI": "MWST",  "LT": "PVM",
+    "LU": "TVA",   "LV": "PVN",   "MC": "TVA",   "MD": "TVA",   "ME": "PDV",
+    "MK": "ДДВ",   "MT": "VAT",   "NL": "btw",   "NO": "MVA",   "PL": "VAT",
+    "PT": "IVA",   "RO": "TVA",   "RS": "PDV",   "SE": "moms",  "SI": "DDV",
+    "SK": "DPH",   "TR": "KDV",   "UA": "ПДВ",   "XK": "TVSH",
+}
+
 VAT_NAMES: dict[str, str] = {
     "AT": "Umsatzsteuer",
     "BE": "Belasting over de toegevoegde waarde",
@@ -280,6 +290,7 @@ def build_dataset(eu_rates: dict[str, dict]) -> dict:
             "currency":     CURRENCY.get(code, "EUR"),
             "eu_member":    True,
             "vat_name":     VAT_NAMES.get(code, ""),
+            "vat_abbr":     VAT_ABBR.get(code, ""),
             "standard":     entry.get("standard"),
             "reduced":      entry.get("reduced", []),
             "super_reduced": entry.get("super_reduced"),
@@ -293,6 +304,7 @@ def build_dataset(eu_rates: dict[str, dict]) -> dict:
             "currency":     entry["currency"],
             "eu_member":    False,
             "vat_name":     entry["vat_name"],
+            "vat_abbr":     VAT_ABBR.get(code, ""),
             "standard":     entry["standard"],
             "reduced":      entry["reduced"],
             "super_reduced": entry["super_reduced"],
@@ -302,7 +314,6 @@ def build_dataset(eu_rates: dict[str, dict]) -> dict:
     return {
         "version": today,
         "source":  "European Commission TEDB",
-        "url":     "https://ec.europa.eu/taxation_customs/tedb/",
         "rates":   dict(sorted(rates_out.items())),
     }
 
@@ -354,8 +365,7 @@ def main() -> int:
     if eu_rates is None:
         print(
             "\nError: EC TEDB SOAP service is unavailable. "
-            "Check connectivity and retry.\n"
-            "Endpoint: " + TEDB_ENDPOINT,
+            "Check connectivity and retry.",
             file=sys.stderr,
         )
         _set_github_output("rates_changed", "false")
