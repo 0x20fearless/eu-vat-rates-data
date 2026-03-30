@@ -1,7 +1,6 @@
-date,npm_weekly,npm_total,pypi_weekly,stars_total,stars_js
-2026-03-02,npm_weekly=366,npm_total=366,pypi_weekly=108,stars_total=0,stars_js=0
-2026-03-09,npm_weekly=29,npm_total=395,pypi_weekly=40,stars_total=3,stars_js=1
-2026-03-16,npm_weekly=12,npm_total=407,pypi_weekly=63,stars_total=3,stars_js=1
-2026-03-23,npm_weekly=14,npm_total=421,pypi_weekly=227,stars_total=3,stars_js=1
-2026-03-30,npm_weekly=621,npm_total=1210,pypi_weekly=493,stars_total=4,stars_js=1
+date,npm_weekly,npm_total,pypi_weekly,pypi_monthly,packagist_monthly,packagist_total,rubygems_total,stars_total
+2026-03-02,366,366,108,,,,,0
+2026-03-09,29,395,40,,,,,3
+2026-03-16,12,407,63,,,,,3
+2026-03-23,14,421,227,,,,,3
 2026-03-30,621,1210,493,827,3,3,1213,4
