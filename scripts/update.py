@@ -302,7 +302,7 @@ def _parse_soap_response(xml_bytes: bytes) -> Optional[dict[str, dict]]:
             continue
         if rv_type in SKIP_RATE_TYPES:
             continue
-        if rv_value is None or rv_value <= 0:
+        if rv_value is None or rv_value < 0:
             continue
 
         entry = raw.setdefault(country_code, {
