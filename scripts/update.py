@@ -70,7 +70,7 @@ VAT_ABBR: dict[str, str] = {
     "LU": "TVA",   "LV": "PVN",   "MC": "TVA",   "MD": "TVA",   "ME": "PDV",
     "MK": "ДДВ",   "MT": "VAT",   "NL": "btw",   "NO": "MVA",   "PL": "VAT",
     "PT": "IVA",   "RO": "TVA",   "RS": "PDV",   "SE": "moms",  "SI": "DDV",
-    "SK": "DPH",   "TR": "KDV",   "UA": "ПДВ",   "XK": "TVSH",
+    "SK": "DPH",   "TR": "KDV",   "UA": "ПДВ",   "XI": "VAT",   "XK": "TVSH",
 }
 
 VAT_NAMES: dict[str, str] = {
@@ -120,7 +120,7 @@ VAT_FORMATS: dict[str, str] = {
     "ES": "ES + letter/digit + 7 digits + letter/digit",
     "FI": "FI + 8 digits",
     "FR": "FR + 2 alphanumeric + 9 digits",
-    "GB": "GB + 9 or 12 digits (or GD/HA + 3 digits)",
+    "GB": "GB + 9 digits, 12 digits, or GD/HA + 3 digits",
     "GE": "GE + 9 digits",
     "GR": "EL + 9 digits",
     "HR": "HR + 11 digits",
@@ -148,6 +148,7 @@ VAT_FORMATS: dict[str, str] = {
     "SK": "SK + 10 digits",
     "TR": "TR + 10 digits",
     "UA": "UA + 12 digits",
+    "XI": "XI + 9 digits, 12 digits, or GD/HA + 3 digits",
     "XK": "XK + 9 digits",
 }
 
@@ -197,6 +198,7 @@ VAT_PATTERNS: dict[str, Optional[str]] = {
     "SK": r"^SK\d{10}$",
     "TR": r"^TR\d{10}$",
     "UA": r"^UA\d{12}$",
+    "XI": r"^XI(\d{9}|\d{12}|(GD|HA)\d{3})$",
     "XK": r"^XK\d{9}$",
 }
 
@@ -219,6 +221,7 @@ NON_EU_COUNTRIES: dict[str, dict] = {
     "RS": {"country": "Serbia",               "currency": "RSD", "vat_name": "Porez na dodatu vrednost",                 "standard": 20.0, "reduced": [10.0],      "super_reduced": None, "parking": None},
     "TR": {"country": "Turkey",               "currency": "TRY", "vat_name": "Katma Değer Vergisi",                      "standard": 20.0, "reduced": [1.0, 10.0], "super_reduced": None, "parking": None},
     "UA": {"country": "Ukraine",              "currency": "UAH", "vat_name": "Податок на додану вартість",               "standard": 20.0, "reduced": [7.0, 14.0], "super_reduced": None, "parking": None},
+    "XI": {"country": "Northern Ireland",     "currency": "GBP", "vat_name": "Value Added Tax",                          "standard": 20.0, "reduced": [5.0],       "super_reduced": None, "parking": None},
     "XK": {"country": "Kosovo",               "currency": "EUR", "vat_name": "Tatimi mbi Vlerën e Shtuar",               "standard": 18.0, "reduced": [8.0],       "super_reduced": None, "parking": None},
 }
 
