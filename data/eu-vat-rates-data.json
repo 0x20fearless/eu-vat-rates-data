@@ -15,8 +15,8 @@
       ],
       "super_reduced": null,
       "parking": null,
-      "format": "AD + alphanumeric",
-      "pattern": null
+      "format": "AD + 1 letter + 6 digits + 1 letter",
+      "pattern": "^AD[A-Z]\\d{6}[A-Z]$"
     },
     "AL": {
       "country": "Albania",
@@ -61,8 +61,8 @@
       "reduced": [],
       "super_reduced": null,
       "parking": null,
-      "format": "BA + alphanumeric",
-      "pattern": null
+      "format": "BA + 12 digits",
+      "pattern": "^BA\\d{12}$"
     },
     "BE": {
       "country": "Belgium",
@@ -262,8 +262,8 @@
       "reduced": [],
       "super_reduced": null,
       "parking": null,
-      "format": "GE + alphanumeric",
-      "pattern": null
+      "format": "GE + 9 digits",
+      "pattern": "^GE\\d{9}$"
     },
     "GR": {
       "country": "Greece",
@@ -374,7 +374,7 @@
       ],
       "super_reduced": null,
       "parking": null,
-      "format": "LI + alphanumeric",
+      "format": "CHE + 9 digits (uses Swiss VAT system)",
       "pattern": null
     },
     "LT": {
@@ -438,7 +438,7 @@
       ],
       "super_reduced": 2.1,
       "parking": null,
-      "format": "MC + alphanumeric",
+      "format": "FR + 2 alphanumeric + 9 digits (uses French VAT system)",
       "pattern": null
     },
     "MD": {
@@ -453,8 +453,8 @@
       ],
       "super_reduced": null,
       "parking": null,
-      "format": "MD + alphanumeric",
-      "pattern": null
+      "format": "MD + 13 digits",
+      "pattern": "^MD\\d{13}$"
     },
     "ME": {
       "country": "Montenegro",
@@ -691,8 +691,8 @@
       ],
       "super_reduced": null,
       "parking": null,
-      "format": "XK + alphanumeric",
-      "pattern": null
+      "format": "XK + 9 digits",
+      "pattern": "^XK\\d{9}$"
     }
   }
 }

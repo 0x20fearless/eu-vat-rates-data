@@ -105,10 +105,10 @@ VAT_NAMES: dict[str, str] = {
 
 # Human-readable format description for each country's VAT number.
 VAT_FORMATS: dict[str, str] = {
-    "AD": "AD + alphanumeric",
+    "AD": "AD + 1 letter + 6 digits + 1 letter",
     "AL": "AL + 1 letter + 8 digits + 1 letter",
     "AT": "ATU + 8 digits",
-    "BA": "BA + alphanumeric",
+    "BA": "BA + 12 digits",
     "BE": "BE + 0/1 + 9 digits",
     "BG": "BG + 9–10 digits",
     "CH": "CHE + 9 digits (+ MWST/TVA/IVA)",
@@ -121,19 +121,19 @@ VAT_FORMATS: dict[str, str] = {
     "FI": "FI + 8 digits",
     "FR": "FR + 2 alphanumeric + 9 digits",
     "GB": "GB + 9 or 12 digits (or GD/HA + 3 digits)",
-    "GE": "GE + alphanumeric",
+    "GE": "GE + 9 digits",
     "GR": "EL + 9 digits",
     "HR": "HR + 11 digits",
     "HU": "HU + 8 digits",
     "IE": "IE + 7 digits + 1–2 letters",
     "IS": "IS + 5–6 digits",
     "IT": "IT + 11 digits",
-    "LI": "LI + alphanumeric",
+    "LI": "CHE + 9 digits (uses Swiss VAT system)",
     "LT": "LT + 9 or 12 digits",
     "LU": "LU + 8 digits",
     "LV": "LV + 11 digits",
-    "MC": "MC + alphanumeric",
-    "MD": "MD + alphanumeric",
+    "MC": "FR + 2 alphanumeric + 9 digits (uses French VAT system)",
+    "MD": "MD + 13 digits",
     "ME": "ME + 8 digits",
     "MK": "MK + 13 digits",
     "MT": "MT + 8 digits",
@@ -148,16 +148,16 @@ VAT_FORMATS: dict[str, str] = {
     "SK": "SK + 10 digits",
     "TR": "TR + 10 digits",
     "UA": "UA + 12 digits",
-    "XK": "XK + alphanumeric",
+    "XK": "XK + 9 digits",
 }
 
 # Regex pattern string (without slashes) for VAT number validation.
 # None for countries without a standardised format.
 VAT_PATTERNS: dict[str, Optional[str]] = {
-    "AD": None,
+    "AD": r"^AD[A-Z]\d{6}[A-Z]$",
     "AL": r"^AL[A-Z]\d{8}[A-Z]$",
     "AT": r"^ATU\d{8}$",
-    "BA": None,
+    "BA": r"^BA\d{12}$",
     "BE": r"^BE[01]\d{9}$",
     "BG": r"^BG\d{9,10}$",
     "CH": r"^CHE\d{9}(MWST|TVA|IVA)?$",
@@ -170,7 +170,7 @@ VAT_PATTERNS: dict[str, Optional[str]] = {
     "FI": r"^FI\d{8}$",
     "FR": r"^FR[A-HJ-NP-Z0-9]{2}\d{9}$",
     "GB": r"^GB(\d{9}|\d{12}|GD\d{3}|HA\d{3})$",
-    "GE": None,
+    "GE": r"^GE\d{9}$",
     "GR": r"^EL\d{9}$",
     "HR": r"^HR\d{11}$",
     "HU": r"^HU\d{8}$",
@@ -182,7 +182,7 @@ VAT_PATTERNS: dict[str, Optional[str]] = {
     "LU": r"^LU\d{8}$",
     "LV": r"^LV\d{11}$",
     "MC": None,
-    "MD": None,
+    "MD": r"^MD\d{13}$",
     "ME": r"^ME\d{8}$",
     "MK": r"^MK\d{13}$",
     "MT": r"^MT\d{8}$",
@@ -197,7 +197,7 @@ VAT_PATTERNS: dict[str, Optional[str]] = {
     "SK": r"^SK\d{10}$",
     "TR": r"^TR\d{10}$",
     "UA": r"^UA\d{12}$",
-    "XK": None,
+    "XK": r"^XK\d{9}$",
 }
 
 # Non-EU European countries — rates maintained manually.
