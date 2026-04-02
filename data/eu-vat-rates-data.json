@@ -146,7 +146,7 @@
       "country": "Germany",
       "currency": "EUR",
       "eu_member": true,
-      "vat_name": "Umsatzsteuer",
+      "vat_name": "Mehrwertsteuer",
       "vat_abbr": "MwSt",
       "standard": 19.0,
       "reduced": [

@@ -79,7 +79,7 @@ VAT_NAMES: dict[str, str] = {
     "BG": "Данък върху добавената стойност",
     "CY": "Φόρος Προστιθέμενης Αξίας",
     "CZ": "Daň z přidané hodnoty",
-    "DE": "Umsatzsteuer",
+    "DE": "Mehrwertsteuer",
     "DK": "Moms",
     "EE": "Käibemaks",
     "ES": "Impuesto sobre el Valor Añadido",
