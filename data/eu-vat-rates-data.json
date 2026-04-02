@@ -375,7 +375,7 @@
       "super_reduced": null,
       "parking": null,
       "format": "CHE + 9 digits (uses Swiss VAT system)",
-      "pattern": null
+      "pattern": "^CHE\\d{9}(MWST|TVA|IVA)?$"
     },
     "LT": {
       "country": "Lithuania",
@@ -439,7 +439,7 @@
       "super_reduced": 2.1,
       "parking": null,
       "format": "FR + 2 alphanumeric + 9 digits (uses French VAT system)",
-      "pattern": null
+      "pattern": "^FR[A-HJ-NP-Z0-9]{2}\\d{9}$"
     },
     "MD": {
       "country": "Moldova",
