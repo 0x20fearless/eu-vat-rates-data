@@ -27,7 +27,7 @@ jobs:
         id: pypi
         # pypistats has no all-time total; weekly is the finest available period metric
         run: |
-          DATA=$(curl -s "https://pypistats.org/api/packages/eu-vat-rates-data/recent")
+          DATA=$(curl -s --retry 3 --retry-delay 10 --retry-all-errors "https://pypistats.org/api/packages/eu-vat-rates-data/recent")
           WEEKLY=$(echo "$DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['last_week'])")
           echo "weekly=$WEEKLY" >> "$GITHUB_OUTPUT"
 
