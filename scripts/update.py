@@ -193,7 +193,7 @@ VAT_PATTERNS: dict[str, Optional[str]] = {
     "PT": r"^PT\d{9}$",
     "RO": r"^RO\d{2,10}$",
     "RS": r"^\d{9}$",
-    "SE": r"^SE\\d{10}01$",
+    "SE": r"^SE\d{10}01$",
     "SI": r"^SI\d{8}$",
     "SK": r"^SK\d{10}$",
     "TR": r"^\d{10}$",
