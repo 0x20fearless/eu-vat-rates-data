@@ -3,7 +3,7 @@
 [![Last updated](https://img.shields.io/github/last-commit/vatnode/eu-vat-rates-data?path=data%2Feu-vat-rates-data.json&label=last%20updated)](https://github.com/vatnode/eu-vat-rates-data/commits/main/data/eu-vat-rates-data.json)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
 
-Canonical data source — VAT rates for **44 European countries**, including all EU-27 member states plus Norway, Switzerland, the United Kingdom, and more. Sourced from the European Commission TEDB (EU rates) and supplemented with non-EU European countries. Checked daily, committed automatically when rates change.
+Canonical data source — VAT rates for **45 European countries**, including all EU-27 member states plus Norway, Switzerland, the United Kingdom, and more. Sourced from the European Commission TEDB (EU rates) and supplemented with non-EU European countries. Checked daily, committed automatically when rates change.
 
 This repository contains **only the data and the update script**. Language-specific packages are published separately:
 
@@ -122,7 +122,7 @@ Language-specific packages bundle a snapshot of this data at publish time. A new
 
 `AD` `AL` `BA` `CH` `GB` `GE` `IS` `LI` `MC` `MD` `ME` `MK` `NO` `RS` `TR` `UA` `XK`
 
-44 countries total.
+45 countries total.
 
 ---
 
