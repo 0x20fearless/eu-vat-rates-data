@@ -132,6 +132,13 @@ This repository provides **VAT rates** only. If you also need to **validate EU V
 
 ---
 
+## Changelog
+
+### 2026-04-25
+- **fix:** Corrected Sweden (SE) VAT number regex — was `^SE\d{12}$`, now correctly requires the mandatory `01` suffix: `^SE\d{10}01$`.
+
+---
+
 ## License
 
 MIT
