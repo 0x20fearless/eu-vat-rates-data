@@ -15,29 +15,36 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      # Helper: each step tolerates upstream failures (rate limits, 5xx, malformed JSON)
+      # and emits an empty value so the CSV row keeps its column alignment.
       - name: Fetch npm downloads
         id: npm
         run: |
-          WEEKLY=$(curl -s "https://api.npmjs.org/downloads/point/last-week/eu-vat-rates-data" | python3 -c "import sys,json; print(json.load(sys.stdin)['downloads'])")
-          TOTAL=$(curl -s "https://api.npmjs.org/downloads/point/2024-01-01:$(date +%Y-%m-%d)/eu-vat-rates-data" | python3 -c "import sys,json; print(json.load(sys.stdin)['downloads'])")
+          set +e
+          WEEKLY_RAW=$(curl -fsSL --retry 5 --retry-delay 15 --retry-all-errors "https://api.npmjs.org/downloads/point/last-week/eu-vat-rates-data")
+          TOTAL_RAW=$(curl -fsSL --retry 5 --retry-delay 15 --retry-all-errors "https://api.npmjs.org/downloads/point/2024-01-01:$(date +%Y-%m-%d)/eu-vat-rates-data")
+          WEEKLY=$(echo "$WEEKLY_RAW" | python3 -c "import sys,json; print(json.load(sys.stdin)['downloads'])" 2>/dev/null || echo "")
+          TOTAL=$(echo "$TOTAL_RAW" | python3 -c "import sys,json; print(json.load(sys.stdin)['downloads'])" 2>/dev/null || echo "")
           echo "weekly=$WEEKLY" >> "$GITHUB_OUTPUT"
           echo "total=$TOTAL" >> "$GITHUB_OUTPUT"
 
       - name: Fetch PyPI downloads
         id: pypi
-        # pypistats has no all-time total; weekly is the finest available period metric
+        # pypistats aggressively rate-limits shared GitHub Actions IPs; tolerate failure.
         run: |
-          DATA=$(curl -s --retry 3 --retry-delay 10 --retry-all-errors "https://pypistats.org/api/packages/eu-vat-rates-data/recent")
-          WEEKLY=$(echo "$DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['last_week'])")
+          set +e
+          DATA=$(curl -fsSL --retry 5 --retry-delay 15 --retry-all-errors "https://pypistats.org/api/packages/eu-vat-rates-data/recent")
+          WEEKLY=$(echo "$DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['data']['last_week'])" 2>/dev/null || echo "")
           echo "weekly=$WEEKLY" >> "$GITHUB_OUTPUT"
 
       - name: Fetch Packagist downloads
         id: packagist
         # Packagist has no weekly; monthly + total
         run: |
-          DATA=$(curl -s "https://packagist.org/packages/vatnode/eu-vat-rates-data.json")
-          TOTAL=$(echo "$DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['package']['downloads']['total'])")
-          MONTHLY=$(echo "$DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['package']['downloads']['monthly'])")
+          set +e
+          DATA=$(curl -fsSL --retry 5 --retry-delay 15 --retry-all-errors "https://packagist.org/packages/vatnode/eu-vat-rates-data.json")
+          TOTAL=$(echo "$DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['package']['downloads']['total'])" 2>/dev/null || echo "")
+          MONTHLY=$(echo "$DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['package']['downloads']['monthly'])" 2>/dev/null || echo "")
           echo "total=$TOTAL" >> "$GITHUB_OUTPUT"
           echo "monthly=$MONTHLY" >> "$GITHUB_OUTPUT"
 
@@ -45,25 +52,39 @@ jobs:
         id: rubygems
         # RubyGems API only exposes all-time totals (no period-based endpoint)
         run: |
-          DATA=$(curl -s "https://rubygems.org/api/v1/gems/eu_vat_rates_data.json")
-          TOTAL=$(echo "$DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['downloads'])")
+          set +e
+          DATA=$(curl -fsSL --retry 5 --retry-delay 15 --retry-all-errors "https://rubygems.org/api/v1/gems/eu_vat_rates_data.json")
+          TOTAL=$(echo "$DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['downloads'])" 2>/dev/null || echo "")
           echo "total=$TOTAL" >> "$GITHUB_OUTPUT"
 
       - name: Fetch GitHub stars
         id: github
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          JS_DATA=$(curl -s "https://api.github.com/repos/vatnode/eu-vat-rates-data-js")
-          PY_DATA=$(curl -s "https://api.github.com/repos/vatnode/eu-vat-rates-data-python")
-          PHP_DATA=$(curl -s "https://api.github.com/repos/vatnode/eu-vat-rates-data-php")
-          GO_DATA=$(curl -s "https://api.github.com/repos/vatnode/eu-vat-rates-data-go")
-          RB_DATA=$(curl -s "https://api.github.com/repos/vatnode/eu-vat-rates-data-ruby")
+          set +e
+          fetch_stars() {
+            local repo="$1"
+            local data
+            data=$(curl -fsSL --retry 5 --retry-delay 15 --retry-all-errors \
+              -H "Authorization: Bearer $GH_TOKEN" \
+              -H "Accept: application/vnd.github+json" \
+              "https://api.github.com/repos/vatnode/$repo")
+            echo "$data" | python3 -c "import sys,json; print(json.load(sys.stdin)['stargazers_count'])" 2>/dev/null || echo ""
+          }
 
-          STARS_JS=$(echo "$JS_DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['stargazers_count'])")
-          STARS_PY=$(echo "$PY_DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['stargazers_count'])")
-          STARS_PHP=$(echo "$PHP_DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['stargazers_count'])")
-          STARS_GO=$(echo "$GO_DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['stargazers_count'])")
-          STARS_RB=$(echo "$RB_DATA" | python3 -c "import sys,json; print(json.load(sys.stdin)['stargazers_count'])")
-          STARS_TOTAL=$((STARS_JS + STARS_PY + STARS_PHP + STARS_GO + STARS_RB))
+          STARS_JS=$(fetch_stars eu-vat-rates-data-js)
+          STARS_PY=$(fetch_stars eu-vat-rates-data-python)
+          STARS_PHP=$(fetch_stars eu-vat-rates-data-php)
+          STARS_GO=$(fetch_stars eu-vat-rates-data-go)
+          STARS_RB=$(fetch_stars eu-vat-rates-data-ruby)
+
+          # Only compute total if every value is a number; otherwise leave it empty.
+          if [[ "$STARS_JS" =~ ^[0-9]+$ && "$STARS_PY" =~ ^[0-9]+$ && "$STARS_PHP" =~ ^[0-9]+$ && "$STARS_GO" =~ ^[0-9]+$ && "$STARS_RB" =~ ^[0-9]+$ ]]; then
+            STARS_TOTAL=$((STARS_JS + STARS_PY + STARS_PHP + STARS_GO + STARS_RB))
+          else
+            STARS_TOTAL=""
+          fi
 
           echo "stars_js=$STARS_JS" >> "$GITHUB_OUTPUT"
           echo "stars_py=$STARS_PY" >> "$GITHUB_OUTPUT"
