@@ -17,6 +17,28 @@ This repository contains **only the data and the update script**. Language-speci
 
 ---
 
+## Need live VIES validation?
+
+This dataset gives you VAT **rates** for free, offline. The language packages also include offline **format checks** against country-specific regex patterns. None of this calls VIES — format checks only verify the shape of a VAT number, not whether it actually exists.
+
+For **live VIES validation** — confirming a VAT ID is real, pulling the registered company name and address, and getting a VIES consultation number (audit-grade proof of validation) — there's **[vatnode](https://vatnode.dev)**:
+
+- Live VIES validation, with national-database fallback when VIES is down
+- Registered company name, address, registration date
+- VIES consultation number for compliance and audit trails
+- Webhooks for VAT status changes
+- Official [MCP server](https://www.npmjs.com/package/vatnode-mcp) so AI agents (Claude, Cursor, ChatGPT) can validate VAT IDs directly
+- Free tier — no credit card needed
+
+```bash
+curl https://api.vatnode.dev/v1/vat/IE6388047V \
+  -H "Authorization: Bearer YOUR_API_KEY"
+```
+
+[**Get a free API key →**](https://vatnode.dev)
+
+---
+
 ## Direct JSON access
 
 No package needed — use the JSON directly via CDN:
